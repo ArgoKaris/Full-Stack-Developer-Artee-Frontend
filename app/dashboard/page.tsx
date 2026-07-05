@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import api from "@/services/axios";
+import axios from "@/services/axios";
+import DashboardCard from "@/components/dashboard.card";
 
     type DashboardData = {
         total: number;
@@ -12,19 +13,27 @@ import api from "@/services/axios";
         const [data, setData] = useState<DashboardData | null>(null);
         const [loading, setLoading] = useState(true);
 
-        const fatchDashboard = async () => {
-            try {
-                const res = await api.get("/dashboard");
-                setData(res.data.data);
-            } catch (error) {
-                console.log(error);
-            } finally {
-                setLoading(false);
-            }
-        };
+
+      const fetchDashboard = async () => {
+    try {
+        const token = localStorage.getItem("token");
+
+        const res = await axios.get("/dashboard", {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        setData(res.data.data);
+    } catch (error) {
+        console.log(error);
+    } finally {
+        setLoading(false);
+    }
+    };
 
         useEffect(() => {
-            fatchDashboard();
+            fetchDashboard();
         } , []);
 
         if (loading) {
@@ -36,19 +45,23 @@ import api from "@/services/axios";
                 <h1 className="text-2xl font-bold">Dashboard</h1>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="p-4 bg-gray-100 rounded shadow">
-                        <p className="text-black">Total Task</p>
-                        <h2 className="text-3xl font-bold ">{data?.total}</h2>
+                    <div className="p-4 bg-gray-100 rounded shadow text-black-900">
+                    <DashboardCard
+                    title="Total Tasks"
+                    value={data?.total ?? 0 }></DashboardCard>
                     </div>
 
                 <div className="p-4 bg-gray-100 rounded shadow">
-                    <p className="text-black">Completed</p>
-                    <h2 className="text-3xl font-bold">{data?.completed}</h2>
+                   <DashboardCard
+                   title="Completed"
+                   value={data?.completed ?? 0 }></DashboardCard>
                 </div>
                 
                 <div className="p-4 bg-gray-100 rounded shadow">
-                    <p className="text-black">Pending</p>
-                    <h2 className="text-3xl font-bold">{data?.pending}</h2>
+                    <DashboardCard
+                        title="Pending Tasks"
+                        value={data?.pending ?? 0 }>
+                    </DashboardCard>
                 </div>
             </div>
         </div>

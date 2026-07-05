@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { getTasks, createTask, deleteTask, toggleTaskStatus } from "@/services/task";
 import axios from "axios";
 
 type Task = {
@@ -18,9 +19,12 @@ export default function TaskPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-  // =====================
+  const getTasks = async () => {
+        const res = await axios.get("/tasks");
+        setTasks(res.data.data);
+    };
+
   // FETCH TASKS
-  // =====================
   const fetchTasks = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -43,9 +47,7 @@ export default function TaskPage() {
     fetchTasks();
   }, []);
 
-  // =====================
   // CREATE TASK
-  // =====================
   const handleCreate = async () => {
     const token = localStorage.getItem("token");
 
@@ -64,9 +66,7 @@ export default function TaskPage() {
     fetchTasks();
   };
 
-  // =====================
   // DELETE TASK
-  // =====================
   const handleDelete = async (id: number) => {
     const token = localStorage.getItem("token");
 
@@ -79,9 +79,7 @@ export default function TaskPage() {
     fetchTasks();
   };
 
-  // =====================
   // TOGGLE STATUS
-  // =====================
   const handleToggleStatus = async (id: number, status: string) => {
     const token = localStorage.getItem("token");
 
